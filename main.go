@@ -14,9 +14,6 @@ func main() {
 		log.Fatal("Failed to load data:", err)
 	}
 
-	// Calculate recipe statistics
-	dataLoader.CalculateRecipeStats()
-
 	// Initialize search service
 	searchService := NewSearchService(dataLoader.GetRecipes())
 
@@ -28,6 +25,6 @@ func main() {
 	http.HandleFunc("/health", handlers.HealthCheckHandler)
 
 	log.Println("Server running at http://localhost:8080")
-	log.Println("Try: http://localhost:8080/recipes?query=chicken")
+	log.Println("Try: http://localhost:8080/recipes?query=apple")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

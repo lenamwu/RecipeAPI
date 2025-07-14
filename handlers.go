@@ -40,14 +40,12 @@ func (h *Handlers) SearchRecipesHandler(w http.ResponseWriter, r *http.Request) 
 
 // HealthCheckHandler handles health check requests
 func (h *Handlers) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	totalRecipes, goodRecipes := h.searchService.GetStats()
-	totalInteractions := len(h.dataLoader.GetInteractions())
+	totalRecipes, recipesWithRating := h.searchService.GetStats()
 
 	response := map[string]interface{}{
-		"status":             "healthy",
-		"total_recipes":      totalRecipes,
-		"good_recipes":       goodRecipes,
-		"total_interactions": totalInteractions,
+		"status":               "healthy",
+		"total_recipes":        totalRecipes,
+		"recipes_with_rating":  recipesWithRating,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
