@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -24,7 +25,13 @@ func main() {
 	http.HandleFunc("/recipes", handlers.SearchRecipesHandler)
 	http.HandleFunc("/health", handlers.HealthCheckHandler)
 
-	log.Println("Server running at http://localhost:8080")
-	log.Println("Try: http://localhost:8080/recipes?query=apple")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// Get the port from environment variable or default to 8080
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Printf("Server running at http://localhost:%s\n", port)
+	log.Printf("Try: http://localhost:%s/recipes?query=apple\n", port)
+	log.Fatal(http.ListenAndServe(":" + port, nil))
 }
