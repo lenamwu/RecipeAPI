@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"io"
+	"log"
 	"net/http"
 )
 
@@ -43,11 +45,35 @@ func (h *Handlers) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	totalRecipes, recipesWithRating := h.searchService.GetStats()
 
 	response := map[string]interface{}{
-		"status":               "healthy",
-		"total_recipes":        totalRecipes,
-		"recipes_with_rating":  recipesWithRating,
+		"status":              "healthy",
+		"total_recipes":       totalRecipes,
+		"recipes_with_rating": recipesWithRating,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+// ImageProxyHandler serves images via proxy to bypass CORS issues
+func (h *Handlers) ImageProxyHandler(w http.ResponseWriter, r *http.Request) {
+	imgURL := r.URL.Query().Get("url")
+	if imgURL == "" {
+		http.Error(w, "Missing 'url' query parameter", http.StatusBadRequest)
+		return
+	}
+
+	resp, err := http.Get(imgURL)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		http.Error(w, "Failed to fetch image", http.StatusBadGateway)
+		return
+	}
+	defer resp.Body.Close()
+
+	w.Header().Set("Content-Type", resp.Header.Get("Content-Type"))
+	w.WriteHeader(http.StatusOK)
+
+	_, copyErr := io.Copy(w, resp.Body)
+	if copyErr != nil {
+		log.Println("Error copying image data:", copyErr)
+	}
 }

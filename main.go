@@ -24,6 +24,7 @@ func main() {
 	// Setup HTTP routes
 	http.HandleFunc("/recipes", handlers.SearchRecipesHandler)
 	http.HandleFunc("/health", handlers.HealthCheckHandler)
+	http.HandleFunc("/img", handlers.ImageProxyHandler)
 
 	// Get the port from environment variable or default to 8080
 	port := os.Getenv("PORT")
