@@ -89,6 +89,9 @@ func (h *Handlers) ImageProxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 
+	// Add this line to allow cross-origin requests:
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	w.Header().Set("Content-Type", resp.Header.Get("Content-Type"))
 	w.WriteHeader(http.StatusOK)
 
